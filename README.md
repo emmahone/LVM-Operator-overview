@@ -1,5 +1,5 @@
-# LVMO-mount-and-unmount
-Mount flow of operations
+## LVMO-mount-and-unmount
+# Mount flow of operations
 ```mermaid
 graph TD
   A[Start] --> B{Is PV mounted?}
@@ -31,7 +31,7 @@ graph TD
 - N: Creating a VG can be done using the sudo vgcreate <vg-name> /dev/<device-name> command, where <device-name> is the name of the device that will be used for the VG. This step is repeated here because it is necessary to create the VG before creating the PV.
 Note that the specific commands and syntax may vary depending on the OS and version being used.
   
-  Unmount flow of operations
+  # Unmount flow of operations
   ```mermaid
   graph TD
   A[Start] --> B{Is PV mounted?}
