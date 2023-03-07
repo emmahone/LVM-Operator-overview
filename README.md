@@ -13,6 +13,8 @@ LVM in RHEL provides several advantages over traditional partition-based storage
 
 LVM is a powerful tool for managing disk storage in RHEL, providing flexibility, scalability, and reliability to meet the storage needs of modern enterprise applications.
 
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/logical_volume_manager_administration/lvm_definition
+
 # About The LVM Storage Operator
 In Openshift, the LVM operator provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster.
 
