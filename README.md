@@ -294,6 +294,26 @@ graph TD
   N --> C
   I --> J
   ```
+  
+  ```mermaid
+graph TD
+  A[Start] --> B{Is PV mounted?}
+  B --> |Yes| K[Unmount PV]
+  K --> D{Check if VG exists}
+  B --> |No| D{Check if VG exists}
+  D --> |No| L[Create VG]
+  L --> M[Create LV]
+  M --> E[Mount PV]
+  D --> |Yes| E[Mount PV]
+  E --> F{Check if LV exists}
+  F --> |No| N[Create LV]
+  N --> G[Mount LV]
+  F --> |Yes| G[Mount LV]
+  G --> H{Check if FS is formatted}
+  H --> |No| I[Format FS]
+  H --> |Yes| J[Mount FS]
+  I --> J
+  ```
 - A: The flowchart starts with a "Start" node.
 - B: The first decision point in the flowchart is to check if the PV is already mounted. If the PV is mounted, the flowchart proceeds to the "Unmount PV" node (C) to safely unmount the PV before continuing. If the PV is not mounted, the flowchart proceeds to the next step. Checking if a PV is mounted can be done using the kubectl get pv command. If the PV was initially mounted and had to be unmounted, the flowchart loops back to the "Is PV mounted?" decision point (B) to continue with the mounting process. If the PV was not initially mounted, the flowchart ends at the "Mount FS" node (J) after all steps have been completed.
 - C: Unmounting a PV can be done using the kubectl delete pv <pv-name> command.
