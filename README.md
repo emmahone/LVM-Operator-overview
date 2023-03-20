@@ -16,6 +16,11 @@ LVM is a powerful tool for managing disk storage in RHEL, providing flexibility,
 [Source](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/logical_volume_manager_administration/lvm_definition)
 
 # About The LVM Storage Operator
+```mermaid
+graph LR
+LVMStorageOperator-->LVMCluster
+LVMStorageOperator-->StorageClass
+```
 In Openshift, the LVM operator (LVMS) provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster.
 
 Some of the key features of the LVM operator include:
@@ -46,11 +51,32 @@ Overall, the LVMS operator is a powerful tool for managing storage resources in 
 You can install the LVMS Operator using either the [Web Console](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-installing-lvms-with-web-console_logical-volume-manager-storage)  or via [RHACM](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-installing-odf-logical-volume-manager-operator-using-rhacm_logical-volume-manager-storage).
 
 # The LVMCluster custom resource
+The `LVMCluster` custom resource is a Kubernetes custom resource that is used in the LVMS Operator on OpenShift. The LVMCluster custom resource is used to create a Logical Volume Manager (LVM) cluster after LVM Storage is installed on OpenShift Container Platform.
 
+Here are the steps to create an LVMCluster custom resource:
+
+    1. Ensure that the Project selected is `openshift-storage`.
+    2. In the OpenShift Container Platform Web Console, click `Operators` → `Installed Operators` to view all the installed Operators.
+    3. Click on `LVM Storage`, and then click `Create LVMCluster` under `LVMCluster`.
+    4. In the `Create LVMCluster` page, select either `Form view` or `YAML view`.
+    5. In the `YAML view`, specify the LVMCluster custom resource definition with the required fields such as name, deviceClasses, thinPoolConfig, and nodeSelector.
 
 [Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-creating-lvms-cluster_logical-volume-manager-storage)
 
-# Mount flow of operations
+The LVMCluster custom resource has the following fields:
+
+    - `name`: The name of the LVMCluster custom resource.
+    - `deviceClasses`: A list of device classes that define the storage devices to use in the LVM cluster.
+    - `thinPoolConfig`: The configuration for the thin pool that will be created in the LVM cluster.
+    - `nodeSelector`: A node selector that matches the worker nodes to use in the LVM cluster.
+
+The LVMCluster custom resource also has some optional fields:
+
+    - `tolerations`: A list of node tolerations to apply to the LVMCluster custom resource.
+    - `deviceSelector`: A device selector that selects the storage devices to use in the LVM cluster. If this field is not included during the LVMCluster creation, it is not possible to add the deviceSelector section to the CR. In this case, the LVMCluster needs to be removed and a new CR needs to be created.
+
+
+# Mount flow of operations for LVM Storage
 ```mermaid
 graph TD
   A[Start] --> B{Is PV mounted?}
@@ -83,7 +109,7 @@ graph TD
 - N: Creating a VG can be done using the `sudo vgcreate <vg-name> /dev/<device-name>` command, where <device-name> is the name of the device that will be used for the VG. This step is repeated here because it is necessary to create the VG before creating the PV.
 Note that the specific commands and syntax may vary depending on the OS and version being used.
   
-  # Unmount flow of operations
+# Unmount flow of operations for LVM Storage
   ```mermaid
   graph TD
   A[Start] --> B{Is PV mounted?}
