@@ -74,6 +74,77 @@ The LVMCluster custom resource also has some optional fields:
 
     - `tolerations`: A list of node tolerations to apply to the LVMCluster custom resource.
     - `deviceSelector`: A device selector that selects the storage devices to use in the LVM cluster. If this field is not included during the LVMCluster creation, it is not possible to add the deviceSelector section to the CR. In this case, the LVMCluster needs to be removed and a new CR needs to be created.
+    
+# How can you provision storage using LVMS?
+You can provision persistent volume claims (PVCs) using the storage class that is created during the Operator installation. You can provision block and file PVCs, however, the storage is allocated only when a pod that uses the PVC is created.
+	
+Procedure:
+1. Identify the `StorageClass` that is created when LVM Storage is deployed. The StorageClass name is in the format, `lvms-<device-class-name>`. The device-class-name is the name of the device class that you provided in the `LVMCluster` of the `Policy` YAML. For example, if the deviceClass is called `vg1`, then the storageClass name is `lvms-vg1`. The volumeBindingMode of the storage class is set to WaitForFirstConsumer.
+
+2. To create a PVC where the application requires storage, save the following YAML to a file with a name such as `pvc.yaml`.
+Example:
+```yaml
+# block pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lvm-block-1
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Block
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: lvms-vg1
+---
+# file pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lvm-file-1
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: lvms-vg1
+```
+
+3. Create the PVC by running the following command:
+```bash
+oc create -f pvc.yaml -ns <application_namespace>
+```
+
+[Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-provisioning-storage-using-lvms_logical-volume-manager-storage)
+
+# What metrics are exposed for the LVMS Operator?
+The LVM Storage Operator in Openshift exposes several metrics and alerts that can be used to monitor and manage logical volume manager storage on single node OpenShift clusters. Metrics are available for use by the Prometheus-based OpenShift Container Platform cluster monitoring stack.
+
+The following metrics are exposed by the LVM Storage Operator in Openshift:
+- topolvm_thinpool_data_percent
+- topolvm_thinpool_metadata_percent
+- topolvm_thinpool_size_bytes
+
+**NOTE:**Metrics are updated every 10 minutes or when there is a change in the thin pool, such as a new logical volume creation.
+
+When the thin pool and volume group are filled up, further operations fail and might lead to data loss. LVM Storage sends the following alerts about the usage of the thin pool and volume group when utilization crosses a certain value:
+- `VolumeGroupUsageAtThresholdNearFull`: This alert is triggered when both the volume group and thin pool utilization cross 75% on nodes. Data deletion or volume group expansion is required.
+- `VolumeGroupUsageAtThresholdCritical`: This alert is triggered when both the volume group and thin pool utilization cross 85% on nodes. `VolumeGroup` is critically full. Data deletion or volume group expansion is required.
+- `ThinPoolDataUsageAtThresholdNearFull`: This alert is triggered when the thin pool data utilization in the volume group crosses 75% on nodes. Data deletion or thin pool expansion is required.
+- `ThinPoolDataUsageAtThresholdCritical`: This alert is triggered when the thin pool data utilization in the volume group crosses 85% on nodes. Data deletion or thin pool expansion is required.
+- `ThinPoolMetaDataUsageAtThresholdNearFull`: This alert is triggered when the thin pool metadata utilization in the volume group crosses 75% on nodes. Data deletion or thin pool expansion is required.
+- `ThinPoolMetaDataUsageAtThresholdCritical`: This alert is triggered when the thin pool metadata utilization in the volume group crosses 85% on nodes. Data deletion or thin pool expansion is required.
+
+[Source](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/observability/index)
+[Adding custom metrics](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/observability/index#adding-custom-metrics)
+
+# Adding storage capacity to SNO Clusters
+
 
 
 # Mount flow of operations for LVM Storage
