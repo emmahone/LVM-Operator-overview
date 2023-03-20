@@ -38,6 +38,7 @@ Some of the key features of the LVM operator include:
 Overall, the LVMS operator is a powerful tool for managing storage resources in an Openshift cluster, providing automation, scalability, and flexibility to meet the needs of modern containerized applications.
 
 # Limitations of the LVM Operator
+- **Currently, it is not possible to upgrade from OpenShift Data Foundation Logical Volume Manager Operator 4.11 to LVM Storage 4.12 on single-node OpenShift clusters.** See: [1](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-upgrading-lvms-on-sno_logical-volume-manager-storage)
 - The LVMS is only supported in single node Openshift clusters deployed by Red Hat Advanced Cluster Management (RHACM).
 - You can only create a single instance of the LVMCluster custom resource (CR) on an OpenShift Container Platform cluster.
 - You can make only a single deviceClass entry in the LVMCluster CR.
@@ -144,8 +145,135 @@ When the thin pool and volume group are filled up, further operations fail and m
 [Adding custom metrics](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/observability/index#adding-custom-metrics)
 
 # Adding storage capacity to SNO Clusters
+Administrators can add additional capacity to the LVMS Operator by adding additional disks to the `LVMCluster` resource either using the command line (`oc edit LVMCluster/<name> -n openshift-storage`) or via the [web console](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-scaling-storage-of-single-node-openshift-cluster_logical-volume-manager-storage). As an example, we could add the disk `/dev/disk/by-path/pci-0000:89:00.0-nvme-1` by adding it under `spec.storage.deviceClasses.deviceSelector.paths` like below:
 
+```yaml
+apiVersion: lvm.topolvm.io/v1alpha1
+kind: LVMCluster
+metadata:
+  name: my-lvmcluster
+spec:
+  storage:
+    deviceClasses:
+    - name: vg1
+      deviceSelector:
+        paths:
+        - /dev/disk/by-path/pci-0000:87:00.0-nvme-1 
+        - /dev/disk/by-path/pci-0000:88:00.0-nvme-1
+        - /dev/disk/by-path/pci-0000:89:00.0-nvme-1   # <= New disk using 'by-path' 
+      thinPoolConfig:
+        name: thin-pool-1
+        sizePercent: 90
+        overprovisionRatio: 10
+```
 
+Alternatively, an administrator could add additional capacity using [RHACM](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-scaling-storage-of-single-node-openshift-cluster-using-rhacm_logical-volume-manager-storage). This method edits the same `spec.storage.deviceClasses.deviceSelector.paths` as above in the `ConfigurationPolicy` object named `lvms`.
+
+# Expanding LVMS PVCs
+Administrators can expand LVMS provisioned PVCs simply by using `oc patch` commands against the PVC. As an example, you could expand a 2Gi PVC to 3Gi using the syntax below:
+
+```bash
+# oc patch <pvc_name> -n <application_namespace> -p '{ "spec": { "resources": { "requests": { "storage": "3Gi" }}}}'
+```
+Once the path command is ran, watch the `status.conditions` field of the PVC to see if the resize has completed. OpenShift Container Platform adds the Resizing condition to the PVC during expansion, which is removed after the expansion completes.
+
+[Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-scaling-expand-pvc_logical-volume-manager-storage)
+
+# Volume snapshots in LVMS
+You can take volume snapshots of persistent volumes (PVs) that are provisioned by LVM Storage. To take a volume snapshot, you must make sure you meet the prerequisites below:
+- The persistent volume claim (PVC) is in the `Bound` state. This is required for a consistent snapshot.
+- You stopped all the I/O to the PVC before taking the snapshot.
+
+Once you have confirmed you meet the prerequisites, you can create a new `VolumeSnapshot` object that references the PVC you want to take a snapshot of. As an example, to take a snapshot of the PVC `lvm-block-1`, you could create the object below:
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+    name: lvm-block-1-snap
+spec:
+    volumeSnapshotClassName: lvms-vg1
+    source:
+        persistentVolumeClaimName: lvm-block-1
+```
+Once this VolumeSnapshot object is created, a read-only copy of the PVC `lvm-block-1` is created as a volume snapshot.
+
+[Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-creating-volume-snapshots-in-single-node-openshift_logical-volume-manager-storage)
+
+# Restoring from a volume snapshot
+Using volume snapshots you can restore a PVC to a previous state. To do so you must meet the below prerequisites:
+- The StorageClass must be the same as the source PVC.
+- The size of the requested PVC must be the same as that of the source volume of the snapshot.
+
+In order to restore from the a snapshot, follow the procedure below:
+1. First identify the storage class name of the source PVC and volume snapshot name. 
+2. Save the following YAML to a file representing the PVC using the storageclass name and volume snapshot name from the first step. Save as `lvms-vol-restore.yaml`.
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: lvm-block-1-restore
+spec:
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Block
+  Resources:
+    Requests:
+      storage: 2Gi
+  storageClassName: lvms-vg1
+  dataSource:
+    name: lvm-block-1-snap
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io
+```
+3. Create the policy by running the following command in the same namespace as the snapshot:
+```bash
+# oc create -f lvms-vol-restore.yaml
+```
+
+[Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-restoring-volume-snapshots-in-single-node-openshift_logical-volume-manager-storage)
+
+# Volume clones in LVMS
+A volume clone is a duplicate of an existing storage volume that can be used like any standard volume. An administrator can create a clone of a volume to make a point-in-time copy of the data. A persistent volume claim (PVC) cannot be cloned with a different size. The prerequisites to clone a volume are below:
+- The PVC is in the `Bound` state. This is required for a consistent snapshot.
+- The StorageClass must be the same as the source PVC.
+
+As an example, to create a volume clone of the `lvm-block-1` PVC from the `lvms-vg1` storageclass, follow the procedure below:
+1. Identify the `spec.storageClassName` and `metadata.name` fields of the source PVC.
+2. Use the storage class from the first step and save the following YAML to a file with a name such as `lvms-vol-clone.yaml`:
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+Metadata:
+  name: lvm-block-1-clone
+Spec:
+  storageClassName: lvms-vg1
+  dataSource:
+    name: lvm-block-1
+    kind: PersistentVolumeClaim
+  accessModes:
+   - ReadWriteOnce
+  volumeMode: Block
+  Resources:
+    Requests:
+      storage: 2Gi
+```
+3. Create the clone by running the following command in the same namespace as the snapshot:
+```bash
+# oc create -f lvms-vol-clone.yaml
+```
+
+[Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-creating-volume-clones-in-single-node-openshift_logical-volume-manager-storage)
+
+# Troubleshooting
+When LVM Storage is unable to automatically resolve a problem, use the must-gather tool to collect the log files and diagnostic information so that you or the Red Hat Support can review the problem and determine a solution.
+
+Run the must-gather command from the client connected to LVM Storage cluster by running the following command:
+```bash
+# oc adm must-gather --image=registry.redhat.io/lvms4/lvms-must-gather-rhel8:v4.12 --dest-dir=<directory-name>
+```
+
+More information about the must-gather tool can be found [here](https://docs.openshift.com/container-platform/4.12/support/gathering-cluster-data.html#about-must-gather_gathering-cluster-data).
+[Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-dowloading-log-files-and-diagnostics_logical-volume-manager-storage)
 
 # Mount flow of operations for LVM Storage
 ```mermaid
