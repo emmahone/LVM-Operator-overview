@@ -310,14 +310,12 @@ Note that the specific commands and syntax may vary depending on the OS and vers
 # Unmount flow of operations for LVM Storage
   ```mermaid
   graph TD
-  A[Start] --> B{Is PV mounted?}
+  A[Start] --> B{Is LV mounted?}
   B --> |No| C[Exit]
   B --> |Yes| D[Unmount FS]
   D --> E[Unmount LV]
   E --> F[Unmount VG]
-  F --> G[Delete PV]
-  G --> H[Delete VG]
-  H --> A
+  F --> A
   ```
 - A: The flowchart starts with a "Start" node.
 - B: The first decision point in the flowchart is to check if the PV is mounted. If the PV is not mounted, the flowchart proceeds to the "Exit" node (C) and the process is terminated. If the PV is mounted, the flowchart proceeds to the next step.
