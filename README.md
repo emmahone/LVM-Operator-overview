@@ -278,34 +278,13 @@ More information about the must-gather tool can be found [here](https://docs.ope
 # Mount flow of operations for LVM Storage
 ```mermaid
 graph TD
-  A[Start] --> B{Is PV mounted?}
-  B --> |Yes| C[Unmount PV]
-  C --> D[Check if VG exists]
-  D --> |Yes| E[Mount PV]
-  E --> F[Check if LV exists]
-  F --> |Yes| G[Mount LV]
-  G --> H[Check if FS is formatted]
-  H --> |No| I[Format FS]
-  H --> |Yes| J[Mount FS]
-  B --> |No| K[Check if VG exists]
-  K --> |No| L[Create VG]
-  L --> M[Create PV]
-  M --> N[Create VG]
-  N --> C
-  I --> J
-  ```
-  
-  ```mermaid
-graph TD
-  A[Start] --> B{Is PV mounted?}
-  B --> |Yes| K[Unmount PV]
+  A[Start] --> B{Check if PV exists}
+  B --> |Yes| D{Check if VG exists}
+  B --> |No| K[Create PV]
   K --> D{Check if VG exists}
-  B --> |No| D{Check if VG exists}
   D --> |No| L[Create VG]
-  L --> M[Create LV]
-  M --> E[Mount PV]
-  D --> |Yes| E[Mount PV]
-  E --> F{Check if LV exists}
+  L --> F{Check if LV exists}
+  D --> |Yes| F{Check if LV exists}
   F --> |No| N[Create LV]
   N --> G[Mount LV]
   F --> |Yes| G[Mount LV]
