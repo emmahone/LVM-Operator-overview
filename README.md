@@ -21,19 +21,15 @@ graph LR
 LVMStorageOperator-->LVMCluster
 LVMStorageOperator-->StorageClass
 ```
-In Openshift, the LVM operator (LVMS) provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster.
+In Openshift, the LVM Storage operator (LVMS) provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster. The LVMS operator is based on the [topoLVM](https://github.com/topolvm/topolvm) project which provides a Kubernetes volume plugin that allows LVMS to provision and manage LVM storage in a cluster. It aims to provide a simple and reliable way to manage storage, without requiring extensive knowledge of storage systems or configurations.
 
-Some of the key features of the LVM operator include:
+Some of the key features of the LVMS operator include:
 
 - Automation: The Local Volume Manager Storage (LVMS) operator automates the process of creating and managing logical volumes, reducing the need for manual intervention and making it easier to scale storage resources in an Openshift cluster.
 
 - Dynamic resizing: The LVMS operator enables dynamic resizing of logical volumes, which means that administrators can easily add or remove storage capacity as needed without having to shut down or restart applications.
 
 - Backup and recovery: The LVMS operator includes built-in backup and recovery capabilities, which means that administrators can easily create and restore backups of logical volumes in the event of data loss or corruption.
-
-- Integration with other Openshift components: The LVM operator is designed to work seamlessly with other components of the Openshift platform, such as persistent volumes and storage classes, to provide a comprehensive storage management solution.
-
-- Customization: The LVMS operator can be customized to meet specific storage requirements, allowing administrators to define policies and rules for logical volume creation and management.
 
 Overall, the LVMS operator is a powerful tool for managing storage resources in an Openshift cluster, providing automation, scalability, and flexibility to meet the needs of modern containerized applications.
 
