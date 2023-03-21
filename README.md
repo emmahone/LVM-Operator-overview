@@ -279,9 +279,9 @@ More information about the must-gather tool can be found [here](https://docs.ope
 ```mermaid
 graph TD
   A[Start] --> B{Check if PV exists}
-  B --> |Yes| D{Check if VG exists}
   B --> |No| K[Create PV]
   K --> D{Check if VG exists}
+  B --> |Yes| D{Check if VG exists}
   D --> |No| L[Create VG]
   L --> F{Check if LV exists}
   D --> |Yes| F{Check if LV exists}
