@@ -41,7 +41,6 @@ Note that the specific commands and syntax may vary depending on the OS and vers
   B --> |No| C[Exit]
   B --> |Yes| D[Unmount FS]
   D --> E[Unmount LV]
-  E --> F[Unmount VG]
   ```
 - The flowchart starts with a "Start" node.
-- The only decision point in the flowchart is checking whether the LV is mounted. If the LV is not mounted, exit. If the LV is mounted continue to unmount the FS -> LV -> VG. 
+- The only decision point in the flowchart is checking whether the LV is mounted. If the LV is not mounted, exit. If the LV is mounted continue to unmount the FS -> LV. 
