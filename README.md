@@ -1,13 +1,13 @@
 # Logical Volume Manager
-Logical Volume Manager (LVM) is a software-based tool used for managing disk storage in Linux operating systems, including RHEL. LVM works by abstracting physical storage devices, such as hard disk drives or solid-state drives, into logical volumes that can be resized, moved, and backed up without disrupting the operation of the system.
+`Logical Volume Manager (LVM)` is a software-based tool used for managing disk storage in Linux operating systems, including RHEL. LVM works by abstracting physical storage devices, such as hard disk drives or solid-state drives, into logical volumes that can be resized, moved, and backed up without disrupting the operation of the system.
 
 In RHEL, LVM is implemented as a set of kernel modules that provide support for logical volumes. When LVM is installed, it creates a new layer of abstraction between physical storage devices and the file system. This layer is composed of three main components: physical volumes (PVs), volume groups (VGs), and logical volumes (LVs).
 
-Physical volumes (PV) are storage devices that are managed by LVM. They can be disks, partitions, or even entire storage arrays. When a physical volume is initialized by LVM, it is divided into a number of physical extents (PEs), which are small, fixed-size units of storage.
+`Physical volumes (PV)` are storage devices that are managed by LVM. They can be disks, partitions, or even entire storage arrays. When a physical volume is initialized by LVM, it is divided into a number of physical extents (PEs), which are small, fixed-size units of storage.
 
-Volume groups (VG) are collections of one or more physical volumes that are grouped together by LVM. A volume group provides a pool of storage space that can be allocated to logical volumes as needed.
+`Volume groups (VG)` are collections of one or more physical volumes that are grouped together by LVM. A volume group provides a pool of storage space that can be allocated to logical volumes as needed.
 
-Logical volumes (LV) are virtual disks that are created within volume groups. A logical volume is composed of one or more physical extents, which can be allocated from one or more physical volumes. Logical volumes can be resized dynamically, which means that administrators can add or remove storage capacity without having to shut down or restart the system.
+`Logical volumes (LV)` are virtual disks that are created within volume groups. A logical volume is composed of one or more physical extents, which can be allocated from one or more physical volumes. Logical volumes can be resized dynamically, which means that administrators can add or remove storage capacity without having to shut down or restart the system.
 
 LVM in RHEL provides several advantages over traditional partition-based storage systems. First, LVM allows administrators to allocate storage space more efficiently, by allowing logical volumes to span multiple physical volumes. Second, LVM provides greater flexibility in managing storage resources, by allowing logical volumes to be resized on-the-fly without disrupting the system. Finally, LVM provides enhanced reliability, by providing built-in support for backups and snapshots of logical volumes.
 
@@ -21,25 +21,25 @@ graph LR
 LVMStorageOperator-->LVMCluster
 LVMStorageOperator-->StorageClass
 ```
-In Openshift, the LVM Storage operator (LVMS) provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster. The LVMS operator is based on the [topoLVM](https://github.com/topolvm/topolvm) project which provides a Kubernetes volume plugin that allows LVMS to provision and manage LVM storage in a cluster. It aims to provide a simple and reliable way to manage storage, without requiring extensive knowledge of storage systems or configurations.
+In Openshift, the `LVM Storage operator (LVMS)` provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster. The LVMS operator is based on the [topoLVM](https://github.com/topolvm/topolvm) project which provides a Kubernetes volume plugin that allows LVMS to provision and manage LVM storage in a cluster. It aims to provide a simple and reliable way to manage storage, without requiring extensive knowledge of storage systems or configurations.
 
 Some of the key features of the LVMS operator include:
 
-- Automation: The Local Volume Manager Storage (LVMS) operator automates the process of creating and managing logical volumes, reducing the need for manual intervention and making it easier to scale storage resources in an Openshift cluster.
+- `Automation`: The Local Volume Manager Storage (LVMS) operator automates the process of creating and managing logical volumes, reducing the need for manual intervention and making it easier to scale storage resources in an Openshift cluster.
 
-- Dynamic resizing: The LVMS operator enables dynamic resizing of logical volumes, which means that administrators can easily add or remove storage capacity as needed without having to shut down or restart applications.
+- `Dynamic resizing`: The LVMS operator enables dynamic resizing of logical volumes, which means that administrators can easily add or remove storage capacity as needed without having to shut down or restart applications.
 
-- Backup and recovery: The LVMS operator includes built-in backup and recovery capabilities, which means that administrators can easily create and restore backups of logical volumes in the event of data loss or corruption.
+- `Backup and recovery`: The LVMS operator includes built-in backup and recovery capabilities, which means that administrators can easily create and restore backups of logical volumes in the event of data loss or corruption.
 
 Overall, the LVMS operator is a powerful tool for managing storage resources in an Openshift cluster, providing automation, scalability, and flexibility to meet the needs of modern containerized applications.
 
 # Limitations of the LVM Operator
 - **Currently, it is not possible to upgrade from OpenShift Data Foundation Logical Volume Manager Operator 4.11 to LVM Storage 4.12 on single-node OpenShift clusters.** See: [1](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-upgrading-lvms-on-sno_logical-volume-manager-storage)
-- The LVMS is only supported in single node Openshift clusters deployed by Red Hat Advanced Cluster Management (RHACM).
-- You can only create a single instance of the LVMCluster custom resource (CR) on an OpenShift Container Platform cluster.
-- You can make only a single deviceClass entry in the LVMCluster CR.
-- When a device becomes part of the LVMCluster CR, it cannot be removed.
-- LVM Storage creates a volume group using all the available unused disks and creates a single thin pool with a size of 90% of the volume group. The remaining 10% of the volume group is left free to enable data recovery by expanding the thin pool when required.
+- The LVMS is only supported in single node Openshift clusters deployed by `Red Hat Advanced Cluster Management (RHACM)`.
+- You can only create a single instance of the `LVMCluster` custom resource (CR) on an OpenShift Container Platform cluster.
+- You can make only a single `deviceClass` entry in the `LVMCluster` CR.
+- When a device becomes part of the `LVMCluster` CR, it cannot be removed.
+- LVM Storage creates a `volume group` using all the available unused disks and creates a single thin pool with a size of 90% of the volume group. The remaining 10% of the volume group is left free to enable data recovery by expanding the thin pool when required.
 - LVM Storage configures a default overprovisioning limit of 10 to take advantage of the thin-provisioning feature. The total size of the volumes and volume snapshots that can be created on the single-node OpenShift clusters is 10 times the size of the thin pool.
 
 [Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-preface-sno-ran_logical-volume-manager-storage)
@@ -73,10 +73,10 @@ The LVMCluster custom resource also has some optional fields:
     - `deviceSelector`: A device selector that selects the storage devices to use in the LVM cluster. If this field is not included during the LVMCluster creation, it is not possible to add the deviceSelector section to the CR. In this case, the LVMCluster needs to be removed and a new CR needs to be created.
     
 # How can you provision storage using LVMS?
-You can provision persistent volume claims (PVCs) using the storage class that is created during the Operator installation. You can provision block and file PVCs, however, the storage is allocated only when a pod that uses the PVC is created.
+You can provision `persistent volume claims (PVCs)` using the `storageclass` that is created during the Operator installation. You can provision block and file PVCs, however, the storage is allocated only when a pod that uses the PVC is created.
 	
 Procedure:
-1. Identify the `StorageClass` that is created when LVM Storage is deployed. The StorageClass name is in the format, `lvms-<device-class-name>`. The device-class-name is the name of the device class that you provided in the `LVMCluster` of the `Policy` YAML. For example, if the deviceClass is called `vg1`, then the storageClass name is `lvms-vg1`. The volumeBindingMode of the storage class is set to WaitForFirstConsumer.
+1. Identify the `StorageClass` that is created when LVM Storage is deployed. The StorageClass name is in the format, `lvms-<device-class-name>`. The device-class-name is the name of the device class that you provided in the `LVMCluster` of the `Policy` YAML. For example, if the deviceClass is called `vg1`, then the storageClass name is `lvms-vg1`. The `volumeBindingMode` of the storage class is set to `WaitForFirstConsumer`.
 
 2. To create a PVC where the application requires storage, save the following YAML to a file with a name such as `pvc.yaml`.
 Example:
@@ -123,9 +123,9 @@ oc create -f pvc.yaml -ns <application_namespace>
 The LVM Storage Operator in Openshift exposes several metrics and alerts that can be used to monitor and manage logical volume manager storage on single node OpenShift clusters. Metrics are available for use by the Prometheus-based OpenShift Container Platform cluster monitoring stack.
 
 The following metrics are exposed by the LVM Storage Operator in Openshift:
-- topolvm_thinpool_data_percent
-- topolvm_thinpool_metadata_percent
-- topolvm_thinpool_size_bytes
+- `topolvm_thinpool_data_percent`
+- `topolvm_thinpool_metadata_percent`
+- `topolvm_thinpool_size_bytes`
 
 **NOTE:**Metrics are updated every 10 minutes or when there is a change in the thin pool, such as a new logical volume creation.
 
@@ -176,7 +176,7 @@ Once the path command is ran, watch the `status.conditions` field of the PVC to 
 [Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-scaling-expand-pvc_logical-volume-manager-storage)
 
 # Volume snapshots in LVMS
-You can take volume snapshots of persistent volumes (PVs) that are provisioned by LVM Storage. To take a volume snapshot, you must make sure you meet the prerequisites below:
+You can take `volume snapshots` of `persistent volumes (PVs)` that are provisioned by LVM Storage. To take a volume snapshot, you must make sure you meet the prerequisites below:
 - The persistent volume claim (PVC) is in the `Bound` state. This is required for a consistent snapshot.
 - You stopped all the I/O to the PVC before taking the snapshot.
 
@@ -191,7 +191,7 @@ spec:
     source:
         persistentVolumeClaimName: lvm-block-1
 ```
-Once this VolumeSnapshot object is created, a read-only copy of the PVC `lvm-block-1` is created as a volume snapshot.
+Once this `VolumeSnapshot` object is created, a read-only copy of the PVC `lvm-block-1` is created as a volume snapshot.
 
 [Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-creating-volume-snapshots-in-single-node-openshift_logical-volume-manager-storage)
 
@@ -229,7 +229,7 @@ spec:
 [Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-restoring-volume-snapshots-in-single-node-openshift_logical-volume-manager-storage)
 
 # Volume clones in LVMS
-A volume clone is a duplicate of an existing storage volume that can be used like any standard volume. An administrator can create a clone of a volume to make a point-in-time copy of the data. A persistent volume claim (PVC) cannot be cloned with a different size. The prerequisites to clone a volume are below:
+A `volume clone` is a duplicate of an existing storage volume that can be used like any standard volume. An administrator can create a clone of a volume to make a point-in-time copy of the data. A persistent volume claim (PVC) cannot be cloned with a different size. The prerequisites to clone a volume are below:
 - The PVC is in the `Bound` state. This is required for a consistent snapshot.
 - The StorageClass must be the same as the source PVC.
 
