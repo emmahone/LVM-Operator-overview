@@ -27,14 +27,17 @@ PersistentVolumeB-->LV2
 LVMCluster-->|Comprised of|Disk1((Disk1))
 LVMCluster-->|Comprised of|Disk2((Disk2))
 LVMCluster-->|Comprised of|Disk3((Disk3))
-Disk1-->|Abstracted|PV1
-Disk2-->|Abstracted|PV2
-Disk3-->|Abstracted|PV3
-PV1-->VG
-PV2-->VG
-PV3-->VG
-LV1-->VG
-LV2-->VG
+
+subgraph Logical Volume Manager
+  Disk1-->|Abstracted|PV1
+  Disk2-->|Abstracted|PV2
+  Disk3-->|Abstracted|PV3
+  PV1-->VG
+  PV2-->VG
+  PV3-->VG
+  LV1-->VG
+  LV2-->VG
+end
 ```
 In Openshift, the `LVM Storage operator (LVMS)` provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster. The LVMS operator is based on the [topoLVM](https://github.com/topolvm/topolvm) project which provides a Kubernetes volume plugin that allows LVMS to provision and manage LVM storage in a cluster. It aims to provide a simple and reliable way to manage storage, without requiring extensive knowledge of storage systems or configurations.
 
