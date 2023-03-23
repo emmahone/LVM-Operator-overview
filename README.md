@@ -202,6 +202,7 @@ Using volume snapshots you can restore a PVC to a previous state. To do so you m
 
 In order to restore from the a snapshot, follow the procedure below:
 1. First identify the storage class name of the source PVC and volume snapshot name. 
+
 2. Save the following YAML to a file representing the PVC using the storageclass name and volume snapshot name from the first step. Save as `lvms-vol-restore.yaml`.
 ```yaml
 kind: PersistentVolumeClaim
@@ -235,6 +236,7 @@ A `volume clone` is a duplicate of an existing storage volume that can be used l
 
 As an example, to create a volume clone of the `lvm-block-1` PVC from the `lvms-vg1` storageclass, follow the procedure below:
 1. Identify the `spec.storageClassName` and `metadata.name` fields of the source PVC.
+
 2. Use the storage class from the first step and save the following YAML to a file with a name such as `lvms-vol-clone.yaml`:
 ```yaml
 apiVersion: v1
