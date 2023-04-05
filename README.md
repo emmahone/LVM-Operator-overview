@@ -51,9 +51,9 @@ Some of the key features of the LVMS operator include:
 
 Overall, the LVMS operator is a powerful tool for managing storage resources in an Openshift cluster, providing automation, scalability, and flexibility to meet the needs of modern containerized applications.
 
-# Limitations of the LVM Operator
-- **Currently, it is not possible to upgrade from OpenShift Data Foundation Logical Volume Manager Operator 4.11 to LVM Storage 4.12 on single-node OpenShift clusters.** See: [1](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-upgrading-lvms-on-sno_logical-volume-manager-storage)
-- The LVMS is only supported in single node Openshift clusters deployed by `Red Hat Advanced Cluster Management (RHACM)`.
+# Limitations of the LVMS Operator
+- **Currently, it is not possible to upgrade from ODF Logical Volume Manager Operator 4.11 to LVM Storage 4.12 on single-node OpenShift clusters.** See: [1](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-upgrading-lvms-on-sno_logical-volume-manager-storage)
+- The LVMS operator is only supported in single node Openshift clusters deployed by `Red Hat Advanced Cluster Management (RHACM)`.
 - You can only create a single instance of the `LVMCluster` custom resource (CR) on an OpenShift Container Platform cluster.
 - You can make only a single `deviceClass` entry in the `LVMCluster` CR.
 - When a device becomes part of the `LVMCluster` CR, it cannot be removed.
