@@ -249,7 +249,7 @@ spec:
 
 # Volume clones in LVMS
 A `volume clone` is a duplicate of an existing storage volume that can be used like any standard volume. An administrator can create a clone of a volume to make a point-in-time copy of the data. A persistent volume claim (PVC) cannot be cloned with a different size. The prerequisites to clone a volume are below:
-- The PVC is in the `Bound` state. This is required for a consistent snapshot.
+- The PVC is in the `Bound` state. This is required for a consistent clone.
 - The StorageClass must be the same as the source PVC.
 
 As an example, to create a volume clone of the `lvm-block-1` PVC from the `lvms-vg1` storageclass, follow the procedure below:
