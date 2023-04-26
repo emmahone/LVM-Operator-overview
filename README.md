@@ -41,6 +41,8 @@ end
 ```
 In Openshift, the `LVM Storage operator (LVMS)` provides a way to manage and automate the creation, deletion, resizing, and backup of logical volumes in an Openshift cluster. The LVMS operator is based on the [topoLVM](https://github.com/topolvm/topolvm) project which provides a Kubernetes volume plugin that allows LVMS to provision and manage LVM storage in a cluster. It aims to provide a simple and reliable way to manage storage, without requiring extensive knowledge of storage systems or configurations.
 
+You can find an architecture diagram of topoLVM [here](https://github.com/emmahone/topolvm/blob/main/docs/design.md#diagram).
+
 Some of the key features of the LVMS operator include:
 
 - `Automation`: The Local Volume Manager Storage (LVMS) operator automates the process of creating and managing logical volumes, reducing the need for manual intervention and making it easier to scale storage resources in an Openshift cluster.
