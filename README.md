@@ -292,3 +292,13 @@ Run the must-gather command from the client connected to LVM Storage cluster by 
 
 More information about the must-gather tool can be found [here](https://docs.openshift.com/container-platform/4.12/support/gathering-cluster-data.html#about-must-gather_gathering-cluster-data).
 [Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-dowloading-log-files-and-diagnostics_logical-volume-manager-storage)
+
+# Noteworthy changes with V4.13:
+
+- Support multiple storage classes (e.g. for HDD and SSD) 
+
+- Support disconnected installations
+
+- Resource reduction (less CPU/memory requested)
+
+- IPV6 dual stack support
