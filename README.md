@@ -72,25 +72,25 @@ The `LVMCluster` custom resource is a Kubernetes custom resource that is used in
 
 Here are the steps to create an LVMCluster custom resource:
 
-    1. Ensure that the Project selected is `openshift-storage`.
-    2. In the OpenShift Container Platform Web Console, click `Operators` → `Installed Operators` to view all the installed Operators.
-    3. Click on `LVM Storage`, and then click `Create LVMCluster` under `LVMCluster`.
-    4. In the `Create LVMCluster` page, select either `Form view` or `YAML view`.
-    5. In the `YAML view`, specify the LVMCluster custom resource definition with the required fields such as name, deviceClasses, thinPoolConfig, and nodeSelector.
+1. Ensure that the Project selected is `openshift-storage`.
+2. In the OpenShift Container Platform Web Console, click `Operators` → `Installed Operators` to view all the installed Operators.
+3. Click on `LVM Storage`, and then click `Create LVMCluster` under `LVMCluster`.
+4. In the `Create LVMCluster` page, select either `Form view` or `YAML view`.
+5. In the `YAML view`, specify the LVMCluster custom resource definition with the required fields such as name, deviceClasses, thinPoolConfig, and nodeSelector.
 
 [Source](https://docs.openshift.com/container-platform/4.12/storage/persistent_storage/persistent_storage_local/persistent-storage-using-lvms.html#lvms-creating-lvms-cluster_logical-volume-manager-storage)
 
 The LVMCluster custom resource has the following fields:
 
-    - `name`: The name of the LVMCluster custom resource.
-    - `deviceClasses`: A list of device classes that define the storage devices to use in the LVM cluster.
-    - `thinPoolConfig`: The configuration for the thin pool that will be created in the LVM cluster.
-    - `nodeSelector`: A node selector that matches the worker nodes to use in the LVM cluster.
+- `name`: The name of the LVMCluster custom resource.
+- `deviceClasses`: A list of device classes that define the storage devices to use in the LVM cluster.
+- `thinPoolConfig`: The configuration for the thin pool that will be created in the LVM cluster.
+- `nodeSelector`: A node selector that matches the worker nodes to use in the LVM cluster.
 
 The LVMCluster custom resource also has some optional fields:
 
-    - `tolerations`: A list of node tolerations to apply to the LVMCluster custom resource.
-    - `deviceSelector`: A device selector that selects the storage devices to use in the LVM cluster. If this field is not included during the LVMCluster creation, it is not possible to add the deviceSelector section to the CR. In this case, the LVMCluster needs to be removed and a new CR needs to be created.
+- `tolerations`: A list of node tolerations to apply to the LVMCluster custom resource.
+- `deviceSelector`: A device selector that selects the storage devices to use in the LVM cluster. If this field is not included during the LVMCluster creation, it is not possible to add the deviceSelector section to the CR. In this case, the LVMCluster needs to be removed and a new CR needs to be created.
     
 # How can you provision storage using LVMS?
 You can provision `persistent volume claims (PVCs)` using the `storageclass` that is created during the Operator installation. You can provision block and file PVCs, however, the storage is allocated only when a pod that uses the PVC is created.
@@ -296,9 +296,6 @@ More information about the must-gather tool can be found [here](https://docs.ope
 # Noteworthy changes with V4.13:
 
 - Support multiple storage classes (e.g. for HDD and SSD) 
-
 - Support disconnected installations
-
 - Resource reduction (less CPU/memory requested)
-
 - IPV6 dual stack support
